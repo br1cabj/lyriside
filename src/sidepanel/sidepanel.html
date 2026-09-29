@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lyriside</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body data-theme="violet">
+    <main>
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">LYRISIDE</p>
+          <h1>Tu guía del concierto</h1>
+        </div>
+        <label class="theme-picker"><span class="sr-only">Tema visual</span><select id="theme" aria-label="Tema visual"><option value="violet">Violeta</option><option value="midnight">Medianoche</option><option value="contrast">Contraste</option></select></label>
+        <p id="status" class="muted status">Leyendo el video actual…</p>
+      </header>
+
+      <section id="video" class="card video-card hidden">
+        <div class="video-heading"><div><p id="channel" class="eyebrow"></p><h2 id="video-title"></h2></div><button id="favorite" class="icon-button" type="button" aria-pressed="false" title="Guardar en favoritos">☆</button></div>
+        <p id="confidence" class="confidence"></p><p id="evidence" class="muted"></p>
+      </section>
+
+      <section id="now-playing" class="card now-playing hidden" aria-live="polite">
+        <div class="now-topline"><p class="eyebrow">REPRODUCIENDO AHORA</p><span id="play-state"></span></div>
+        <h2 id="now-title"></h2><p id="now-details" class="muted"></p>
+        <div class="progress-track" role="progressbar" aria-label="Progreso del concierto" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill" class="progress-fill"></div></div>
+        <p id="next-track" class="next-track"></p>
+      </section>
+
+      <section id="results" class="hidden">
+        <div class="section-heading"><h2>Setlist</h2><span id="count"></span></div>
+        <div class="list-tools"><label class="search"><span class="sr-only">Buscar una canción</span><input id="track-search" type="search" placeholder="Buscar canción"></label><button id="add-track" class="secondary-button" type="button">+ Añadir</button></div>
+        <div id="tracks"></div>
+      </section>
+
+      <section id="empty" class="card hidden"><h2>No encontré un setlist todavía</h2><p>Revisa la descripción completa o desplázate por los comentarios para cargar más texto antes de actualizar.</p><button id="empty-add-track" class="secondary-button" type="button">Añadir canción manualmente</button></section>
+
+      <section id="track-editor" class="card editor hidden">
+        <p id="editor-title" class="eyebrow">AÑADIR CANCIÓN</p>
+        <form id="track-form"><label>Timestamp opcional<input id="track-timestamp" inputmode="numeric" placeholder="ej. 01:03:12" pattern="(?:\d{1,2}:)?\d{1,2}:\d{2}"></label><label>Nombre de la canción<input id="track-title-input" required maxlength="120" placeholder="Nombre de la canción"></label><div class="form-actions"><button class="secondary-button" id="cancel-edit" type="button">Cancelar</button><button class="primary-button" type="submit">Guardar</button></div></form>
+      </section>
+
+      <div class="bottom-actions"><button id="refresh" class="secondary-button" type="button">Actualizar análisis</button><button id="view-mode" class="secondary-button" type="button" aria-pressed="false">Vista compacta</button></div>
+      <details id="history" class="history"><summary>Conciertos recientes</summary><div id="history-list"></div></details>
+      <p class="note">Datos y correcciones se guardan solo en este navegador. No se envía ni se graba audio.</p>
+    </main>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

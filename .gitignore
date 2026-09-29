@@ -1,0 +1,12 @@
+# Chrome extension packages and private development keys
+*.crx
+*.pem
+
+# Secrets for a future lyrics-provider backend
+.env
+.env.*
+!.env.example
+
+# Operating-system files
+.DS_Store
+Thumbs.db

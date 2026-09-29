@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Lyriside",
+  "description": "Encuentra posibles canciones y setlists en videos de conciertos de YouTube.",
+  "version": "0.1.0",
+  "permissions": ["sidePanel", "tabs", "storage"],
+  "host_permissions": ["https://www.youtube.com/*", "https://music.youtube.com/*"],
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/watch*", "https://music.youtube.com/watch*"],
+      "js": ["src/content/youtube-metadata.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel/sidepanel.html"
+  },
+  "action": {
+    "default_title": "Abrir Lyriside"
+  }
+}
