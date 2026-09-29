@@ -20,8 +20,21 @@ Cuando el setlist contiene timestamps, el panel consulta cada segundo el element
 
 1. Abre `chrome://extensions` en Chrome o `edge://extensions` en Edge.
 2. Activa el modo desarrollador.
-3. Elige **Cargar descomprimida** y selecciona esta carpeta: `C:\Users\bruno\OneDrive\Desktop\workspace\lyrriside`.
+3. Elige **Cargar descomprimida** y selecciona la carpeta raíz que clonaste del repositorio.
 4. Entra a un video de YouTube, abre la extensión y pulsa su icono para mostrar el panel lateral.
+
+## Estructura
+
+```text
+src/
+├─ background/   # Coordinación de la extensión y acciones del panel
+├─ content/      # Lectura de metadatos y control del reproductor de YouTube
+└─ sidepanel/    # Interfaz, setlist, historial y preferencias locales
+```
+
+## Privacidad
+
+Lyriside no graba ni transmite el audio del video. Analiza únicamente texto y estado del reproductor que ya están disponibles en la página de YouTube. El historial, favoritos y correcciones se almacenan localmente en el navegador.
 
 ## Diseño para la siguiente fase
 
