@@ -1,0 +1,19 @@
+name: Validate extension
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check src/background/service-worker.js
+      - run: node --check src/content/youtube-metadata.js
+      - run: node --check src/sidepanel/sidepanel.js
+      - run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+      - run: node --test tests/*.test.js

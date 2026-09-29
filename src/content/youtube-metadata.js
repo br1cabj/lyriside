@@ -67,6 +67,15 @@ function timestampEntries(value, source) {
   return entries;
 }
 
+function inferMusicMetadata(title) {
+  const match = clean(title).match(/^(.{2,80}?)\s*[-–—|]\s*(.{2,120})$/);
+  if (!match) return { artist: "", track: "" };
+  const artist = clean(match[1]);
+  const track = clean(match[2]).replace(/\s*[\[(].*?(official|video|audio|lyrics?|letra|4k).*?[\])]/ig, "").trim();
+  const looksLikeConcert = /\b(live|concert|festival|full show|recital|tour)\b/i.test(track);
+  return { artist, track: looksLikeConcert ? "" : track };
+}
+
 function numberedSetlist(value, source) {
   const lines = value.split(/\r?\n/).map(clean).filter(Boolean);
   const headingIndex = lines.findIndex((line) => /\b(set\s*list|setlist|track\s*list|canciones?)\b/i.test(line));
@@ -107,6 +116,7 @@ function collectVideoData() {
   const channel = firstText(["ytd-video-owner-renderer #channel-name a", "#owner #channel-name a"]);
   const description = getDescription();
   const comments = getVisibleComments();
+  const inferred = inferMusicMetadata(title);
 
   const descriptionCandidates = candidatesFrom(description, "Descripción")
     .map((entry) => ({ ...entry, confidence: "high" }));
@@ -119,14 +129,19 @@ function collectVideoData() {
     return matches.map((entry) => ({ ...entry, confidence: "medium" }));
   });
 
+  const candidates = dedupe([...descriptionCandidates, ...commentCandidates]);
+  if (!candidates.length && inferred.track) {
+    candidates.push({ title: inferred.track, timestamp: null, seconds: null, source: "Título del video", sources: ["Título del video"], confidence: "medium" });
+  }
   return {
     videoId: new URL(location.href).searchParams.get("v"),
     url: location.href,
     title: clean(title),
     channel,
+    artistCandidate: inferred.artist || channel,
     descriptionFound: Boolean(description),
     visibleCommentCount: comments.length,
-    candidates: dedupe([...descriptionCandidates, ...commentCandidates]),
+    candidates,
     setlistConfidence: descriptionCandidates.length ? "high" : commentCandidates.length ? "medium" : "unknown"
   };
 }
@@ -149,6 +164,26 @@ function seekTo(seconds) {
   player.currentTime = Math.min(Math.max(0, seconds), limit);
   return { ok: true };
 }
+
+let watchedPlayer = null;
+let lastBroadcastSecond = -1;
+function broadcastPlayback() {
+  const playback = getPlaybackState();
+  const second = Math.floor(playback?.currentTime ?? -1);
+  if (!playback || second === lastBroadcastSecond) return;
+  lastBroadcastSecond = second;
+  chrome.runtime.sendMessage({ type: "PLAYBACK_TICK", playback }).catch(() => {});
+}
+function watchPlayer() {
+  const player = document.querySelector("video.html5-main-video, video");
+  if (!player || player === watchedPlayer) return;
+  watchedPlayer = player;
+  lastBroadcastSecond = -1;
+  player.addEventListener("timeupdate", broadcastPlayback);
+  player.addEventListener("seeked", broadcastPlayback);
+  player.addEventListener("play", broadcastPlayback);
+}
+setInterval(watchPlayer, 1000);
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "GET_VIDEO_METADATA") {

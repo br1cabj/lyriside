@@ -36,6 +36,10 @@ src/
 
 Lyriside no graba ni transmite el audio del video. Analiza únicamente texto y estado del reproductor que ya están disponibles en la página de YouTube. El historial, favoritos y correcciones se almacenan localmente en el navegador.
 
+## Calidad
+
+El proyecto incluye pruebas para los formatos de timestamps y la inferencia de artista/canción, además de una acción de GitHub que valida el manifiesto y el JavaScript en cada cambio.
+
 ## Diseño para la siguiente fase
 
 La identificación por metadatos vive en `src/content/youtube-metadata.js`. Un futuro proveedor de letras debe integrarse detrás de un backend propio, por ejemplo:

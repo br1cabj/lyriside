@@ -19,7 +19,14 @@
 
       <section id="video" class="card video-card hidden">
         <div class="video-heading"><div><p id="channel" class="eyebrow"></p><h2 id="video-title"></h2></div><button id="favorite" class="icon-button" type="button" aria-pressed="false" title="Guardar en favoritos">☆</button></div>
-        <p id="confidence" class="confidence"></p><p id="evidence" class="muted"></p>
+        <p id="artist" class="artist"></p><p id="confidence" class="confidence"></p><p id="evidence" class="muted"></p>
+      </section>
+
+      <section id="lyrics-view" class="card lyrics-view hidden" aria-live="polite">
+        <button id="close-lyrics" class="text-button" type="button">← Volver al setlist</button>
+        <p id="lyrics-artist" class="eyebrow"></p><h2 id="lyrics-title"></h2>
+        <p id="lyrics-body" class="muted">Preparando búsqueda de letra…</p>
+        <button id="lyrics-search" class="secondary-button" type="button">Buscar fuente de letra</button>
       </section>
 
       <section id="now-playing" class="card now-playing hidden" aria-live="polite">

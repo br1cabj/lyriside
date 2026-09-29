@@ -5,6 +5,7 @@ const empty = document.querySelector("#empty");
 const tracks = document.querySelector("#tracks");
 const nowPlaying = document.querySelector("#now-playing");
 const editor = document.querySelector("#track-editor");
+const lyricsView = document.querySelector("#lyrics-view");
 const DEFAULT_STATE = { settings: { minimal: false, theme: "violet" }, favorites: {}, corrections: {}, history: [] };
 let appState = structuredClone(DEFAULT_STATE);
 let videoData = null;
@@ -109,6 +110,7 @@ function render(data) {
   videoData = data; setHidden(video, false);
   document.querySelector("#video-title").textContent = data.title || "Video sin título";
   document.querySelector("#channel").textContent = data.channel || "YouTube";
+  document.querySelector("#artist").textContent = `Artista estimado: ${data.artistCandidate || data.channel || "Confirma antes de buscar"}`;
   document.querySelector("#confidence").textContent = confidenceLabel(data.setlistConfidence);
   document.querySelector("#evidence").textContent = `Descripción: ${data.descriptionFound ? "sí" : "no"} · Comentarios visibles: ${data.visibleCommentCount}`;
   const favorite = Boolean(appState.favorites[data.videoId]); const favoriteButton = document.querySelector("#favorite");
@@ -179,12 +181,21 @@ tracks.addEventListener("click", async (event) => {
   const button = event.target.closest("button"); if (!button || !videoData) return;
   const track = videoData.candidates.find((item) => item.id === button.dataset.id);
   if (button.classList.contains("jump-button") && track) { await sendToVideo("SEEK_TO", { seconds: track.seconds }); refreshPlayback(); }
-  if (button.classList.contains("lyrics-track") && track) chrome.runtime.sendMessage({ type: "OPEN_LYRICS_SEARCH", artist: videoData.channel, track: track.title });
+  if (button.classList.contains("lyrics-track") && track) openLyrics(track);
   if (button.classList.contains("edit-track") && track) openEditor(track);
   if (button.classList.contains("delete-track") && track) deleteTrack(track.id);
 });
 async function initialize() {
   appState = { ...DEFAULT_STATE, ...(await chrome.storage.local.get(DEFAULT_STATE)) }; appState.settings = { ...DEFAULT_STATE.settings, ...appState.settings };
-  setTheme(appState.settings.theme); setMinimalMode(appState.settings.minimal); renderHistory(); setInterval(refreshPlayback, 1000); refresh();
+  setTheme(appState.settings.theme); setMinimalMode(appState.settings.minimal); renderHistory(); refresh();
 }
+function openLyrics(track) {
+  document.querySelector("#lyrics-artist").textContent = videoData.artistCandidate || videoData.channel || "Artista por confirmar";
+  document.querySelector("#lyrics-title").textContent = track.title;
+  document.querySelector("#lyrics-body").textContent = "La vista interna está lista. Para mostrar letras completas aquí, conecta un proveedor autorizado en el backend de Lyriside.";
+  document.querySelector("#lyrics-search").onclick = () => chrome.runtime.sendMessage({ type: "OPEN_LYRICS_SEARCH", artist: videoData.artistCandidate || videoData.channel, track: track.title });
+  setHidden(lyricsView, false); lyricsView.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+document.querySelector("#close-lyrics").addEventListener("click", () => setHidden(lyricsView, true));
+chrome.runtime.onMessage.addListener((message) => { if (message.type === "PLAYBACK_TICK" && videoData) renderPlayback(message.playback); });
 initialize();

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lyriside",
-  "description": "Encuentra posibles canciones y setlists en videos de conciertos de YouTube.",
+  "description": "Identifica canciones, setlists y timestamps en videos musicales y conciertos de YouTube.",
   "version": "0.1.0",
   "permissions": ["sidePanel", "tabs", "storage"],
   "host_permissions": ["https://www.youtube.com/*", "https://music.youtube.com/*"],
